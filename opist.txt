@@ -1,0 +1,16 @@
+Karol Kuczmarz
+308845
+
+Projekt - gra w kropki
+1. Krótka charakterystyka.
+	Gra będzie przeznaczona dla dwóch użytkowników. Będzie należało uruchomić dwie kopie programu, każdą z odpowiednim argumentem uruchomienia programu.  Dwa uruchomione programy będą się ze sobą komunikowały poprzez plik kolejkowy.
+
+2. Interakcja użytkownika z programem.
+	a) w czasie rozgrywki użytkownicy po kolei wybierają kropki, które chcą zaznaczyć
+	b) gracz może opuścić rozgrywkę w dowolnym momencie - poddać się lub wspólnie z przeciwnikiem zadecydować o podliczeniu punktów)
+
+3. Realizowane przez program funkcje.
+	a) program będzie zbierał koordynaty myszki w momencie kliknięcia i sprawdzał, czy to może być następny ruch gracza (zgodny z zasadami gry)
+	b) program będzie analizował, czy ruch gracza tworzy bazę
+	c) umieszczanie ruchu użytkownika w pliku kolejkowym dla drugiej kopii programu, której używa drugi gracz
+	d) program będzie rysował planszę i aktualizował jej wygląd po ruchach
