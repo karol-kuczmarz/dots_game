@@ -1,0 +1,59 @@
+\documentclass[a4paper]{article}
+% Kodowanie latain 2
+%\usepackage[latin2]{inputenc}
+\usepackage[T1]{fontenc}
+% Można też użyć UTF-8
+\usepackage[utf8]{inputenc}
+
+\usepackage{enumerate}
+% Język
+\usepackage[polish]{babel}
+% \usepackage[english]{babel}
+\usepackage{verbatim}
+% Rózne przydatne paczki:
+% - znaczki matematyczne
+\usepackage{amsmath, amsfonts}
+% - wcięcie na początku pierwszego akapitu
+\usepackage{indentfirst}
+% - komenda \url 
+\usepackage{hyperref}
+% - dołączanie obrazków
+\usepackage{graphics}
+% - szersza strona
+\usepackage[nofoot,hdivide={2cm,*,2cm},vdivide={2cm,*,2cm}]{geometry}
+\frenchspacing
+% - brak numerów stron
+\pagestyle{empty}
+
+% dane autora
+\author{Karol Kuczmarz, 308845}
+\title{Gra w kropki - opis projektu}
+\date{\today}
+
+% początek dokumentu
+\begin{document}
+\maketitle
+\section{Wstęp i krótka charkterystyka}
+Gra będzie przeznaczona dla dwóch użytkowników. Będzie należało uruchomić dwie kopie programu, każdą z odpowiednim argumentem uruchomienia programu.  Dwa uruchomione programy będą się ze sobą komunikowały poprzez plik kolejkowy.
+\section{Interakcja użytkownika z programem}
+\begin{enumerate}
+\item W czasie rozgrywki użytkownicy naprzemiennie wybierają kropkę, którą chcą zająć. Użytkownik będzie czekał na ruch przeciwnika.
+\item Gracz może opuścić rozgrywkę w dowolnym momencie - poddać się lub wspólnie z przeciwnikiem zadecydować o podliczeniu punktów.
+\end{enumerate}
+\section{Realizowane przez program funkcje}
+\begin{enumerate}
+\item Zbieranie koorynatów kliknięcia myszki i ustalanie, które pole zostało wybrane.
+\item Sprawdzanie, czy ruch użytkownika jest zgodny z zasadami gry.
+\item Sprawdzanie, czy ruch użytkownika tworzy bazę (wielokąt) i tworzenie tej bazy
+\begin{enumerate}
+\item Ustalanie wyglądu bazy.
+\item Sprawdzenie, które punkty są w środku.
+\item Policzenie i przyznanie punktów odpowiedniemu graczowi.
+\item Ustawienie niezajętych kropek wewnątrz jako niemożliwych do zajęcia. 
+\end{enumerate}
+\item Umieszczanie informacji o ruchu użytkownika w pliku kolejkowym.
+\item Rysowanie planszy i jej aktualizacja, tzn. nanoszenie kropek i łączenie ich liniami w przypadku istnienia bazy.
+\item Umożliwiane użytkownikowi poddania gry lub skierowania propozycji zakończenia rozgrywki. 
+\end{enumerate}
+
+\end{document}
