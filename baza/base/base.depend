@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1547589496 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.c
+	"base.h"
+
+1547589271 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.h
+	<stdio.h>
+
+1547589635 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/main.c
+	"base.h"
+	<stdlib.h>
+
