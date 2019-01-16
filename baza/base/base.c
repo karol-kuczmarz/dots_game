@@ -1,9 +1,10 @@
 #include"base.h"
 
-void base(_Bool map[], poly res, int beg, int act)
+void base(int map[], poly res, int beg, int act)
 {
     if(act==beg && res->num>3 && sweep(res)==1)
     {
+        checkinside(res, map);
         wypisz(res);
         return;
     }
@@ -132,11 +133,11 @@ _Bool sweep(poly test)
 
 _Bool ifcross(seg a, seg b)
 {
-    int det1=det(a.x1, a.y1, a.x2, a.y2, b.x1, b.x2);
-    if(det1!=0 && (-1)*det1==det(a.x1, a.y1, a.x2, a.y2, b.x2, b.y2)
+    int det1=det(a.x1, a.y1, a.x2, a.y2, b.x1, b.y1);
+    if(det1!=0 && (-1)*sgn(det1)==sgn(det(a.x1, a.y1, a.x2, a.y2, b.x2, b.y2)))
     {
         int det2=det(b.x1, b.y1, b.x2, b.y2, a.x1, a.y1);
-        if(det!=0 && (-1)*det2==det(b.x1, b.y1, b.x2, b.y2, a.x2, a.y2))
+        if(det2!=0 && (-1)*sgn(det2)==sgn(det(b.x1, b.y1, b.x2, b.y2, a.x2, a.y2)))
         {
             return 1;
         }
@@ -147,6 +148,118 @@ _Bool ifcross(seg a, seg b)
 int det(int x1, int y1, int x2, int y2, int x3, int y3)
 {
     return (x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
+}
+
+int sgn(int x)
+{
+    if(x>0)
+    {
+        return 1;
+    }
+    if(x<0)
+    {
+        return -1;
+    }
+    return 0;
+}
+
+_Bool ifinside(seg polynoid[], poly test, int point)
+{
+    int px=point%WIDTH, py=point/WIDTH;
+    int signum=sgn(det(polynoid[0].x1, polynoid[0].y1, polynoid[0].x2, polynoid[0].y2, px, py));
+    for(int i=1; i<test->num; i++)
+    {
+        if(signum!=sgn(det(polynoid[i].x1, polynoid[i].y1, polynoid[i].x2, polynoid[i].y2, px, py)))
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void checkinside(poly res, int map[])
+{
+    seg polynoid[res->num];
+    for(int i=0; i<res->num-1; i++)
+    {
+        polynoid[i].x1=res->node[i]%WIDTH;
+        polynoid[i].y1=res->node[i]/WIDTH;
+        polynoid[i].x2=res->node[i+1]%WIDTH;
+        polynoid[i].y2=res->node[i+1]/WIDTH;
+    }
+    polynoid[res->num-1].x1=res->node[res->num-1]%WIDTH;
+    polynoid[res->num-1].y1=res->node[res->num-1]/WIDTH;
+    polynoid[res->num-1].x2=res->node[0]%WIDTH;
+    polynoid[res->num-1].y2=res->node[0]/WIDTH;
+    for(int i=0; i<HEIGHT*WIDTH; i++)
+    {
+        if(map[i]==0)
+        {
+            if(ifinside(polynoid, res, i)==1)
+            {
+                map[i]=2;
+            }
+        }
+    }
+}
+
+void buildbase(frame *lines, int map[])
+{
+    for(int i=0; i<HEIGHT*WIDTH, i++)
+    {
+        if(map[i]==2)
+        {
+            findbase(lines, map, i);
+        }
+    }
+}
+
+void findbase(frame *lines, int map[], int index)
+{
+    if(map[index-1]==2)
+    {
+        findbase(lines, map[], index-1);
+    }
+    else
+    {
+        map[index-1]=3;
+        if(map[index-1]==1 || map[index-1]==3)
+        {
+            if(map[index+WIDTH]==1)
+            {
+                map[index+WIDTH]=3;
+                push_frame(lines, index+WIDTH, index-1);
+            }
+        }
+        else
+        {
+            if(map[index+WIDTH-1]==1 || map[index+WIDTH==3])
+            {
+
+            }
+        }
+    }
+    if(map[index+1]==2)
+    {
+        findbase(lines, map[], index+1);
+    }
+    if(map[index-WIDTH]==2)
+    {
+        findbase(lines, map[], index-WIDTH);
+    }
+    if(map[index+WIDTH]==2)
+    {
+        findbase(lines, map[], index+WIDTH);
+    }
+}
+
+push_frame(frame *lines, int n1, int n2)
+{
+    lines->line[lines->num].x1=n1%WIDTH;
+    lines->line[lines->num].y1=n1/WIDTH;
+    lines->line[lines->num].x2=n2%WIDTH;
+    lines->line[lines->num].y2=n2/WIDTH;
+    lines->num++;
 }
 
 void wypisz(poly a)
