@@ -1,12 +1,13 @@
 # depslib dependency file v1.0
-1548690652 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.c
+1548691651 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.c
 	"base.h"
 
-1548690842 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.h
+1548691606 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.h
 	<stdio.h>
+	"supporting_functions.h"
 
-1548690842 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/main.c
-	"base.h"
+1548693776 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/main.c
+	"move.h"
 	<stdlib.h>
 
 1547635195 source:/home/i308845/Dokumenty/WDPC/ProjektWDPC/baza/base/base.c
@@ -18,4 +19,16 @@
 1547636002 source:/home/i308845/Dokumenty/WDPC/ProjektWDPC/baza/base/main.c
 	"base.h"
 	<stdlib.h>
+
+1548691606 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/supporting_functions.h
+	<stdio.h>
+
+1548693413 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/move.h
+	"base.h"
+
+1548693579 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/move.c
+	"move.h"
+
+1548691636 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/supporting_functions.c
+	"supporting_functions.h"
 

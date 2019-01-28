@@ -38,6 +38,14 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="move.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="move.h" />
+		<Unit filename="supporting_functions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="supporting_functions.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

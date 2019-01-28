@@ -144,23 +144,6 @@ _Bool ifcross(seg a, seg b)
     return 0;
 }
 
-int det(int x1, int y1, int x2, int y2, int x3, int y3)
-{
-    return (x2-x1)*(y3-y1)-(x3-x1)*(y2-y1);
-}
-
-int sgn(int x)
-{
-    if(x>0)
-    {
-        return 1;
-    }
-    if(x<0)
-    {
-        return -1;
-    }
-    return 0;
-}
 
 _Bool ifinside(seg polynoid[], poly test, int point)
 {
@@ -369,13 +352,6 @@ void push_frame(frame *lines, int n1, int n2, int map[])
     lines->line[lines->num].x2=n2%WIDTH;
     lines->line[lines->num].y2=n2/WIDTH;
     lines->num++;
-}
-
-void swap(int *a, int *b)
-{
-    int c=*a;
-    *a=*b;
-    *b=c;
 }
 
 void wypisz(poly a)

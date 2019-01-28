@@ -1,14 +1,18 @@
-#include"base.h"
+#include"move.h"
 #include<stdlib.h>
 
 /*
 MAP LEGEND:
+-2 - opponent's in base
 -1 - opponent's
 0 - empty or opponent's
 1 - my dot
 2 - borders necessary
 3 - part of a border
-4 - already in base
+4 - dot in base
+5 - mine inside
+6 - noone's illegal
+
 */
 
 int main()
@@ -17,9 +21,9 @@ int main()
     {
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 0, 1, 0, 0, 0,
-        0, 1, 0, 1, 0, 1, 0, 0,
-        0, 0, 1, 0, 1, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, -1, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0
@@ -30,16 +34,16 @@ int main()
         t2[i]=t[i];
     }
     */
-    fig wielokat;
-    wielokat.num=0;
-    base(t, &wielokat, 27, 27);
     frame granice;
     granice.num=0;
-    buildbase(&granice, t);
-    for(int i=0; i<granice.num; i++)
-    {
-        printf("%d %d \n", granice.line[i].x1+granice.line[i].y1*WIDTH, granice.line[i].x2+granice.line[i].y2*WIDTH);
-    }
+    int opp=0, mine=0;
+    move(t, &granice, 37, &opp, &mine);
+    move(t, &granice, 30, &opp, &mine);
+    move(t, &granice, 21, &opp, &mine);
+    move(t, &granice, 26, &opp, &mine);
+    move(t, &granice, 35, &opp, &mine);
+    move(t, &granice, 19, &opp, &mine);
+    move(t, &granice, 28, &opp, &mine);
     for(int i=0; i<HEIGHT; i++)
     {
         for(int j=0; j<WIDTH; j++)
@@ -48,6 +52,7 @@ int main()
         }
         printf("\n");
     }
+    printf("%d %d", mine, opp);
 
     return 0;
 }

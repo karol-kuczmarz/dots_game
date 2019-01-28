@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include"supporting_functions.h"
 
 #define HEIGHT 8
 #define WIDTH 8
@@ -34,13 +35,10 @@ void push_poly(poly a, int number);
 int pop_poly(poly a);
 _Bool sweep(poly test);
 _Bool ifcross(seg a, seg b);
-int det(int x1, int y1, int x2, int y2, int x3, int y3);
-int sgn(int x);
 _Bool ifinside(seg polynoid[], poly test, int point);
 void checkinside(poly res, int map[]);
 void buildbase(frame *lines, int map[]);
 void findbase(frame *lines, int map[], int index);
 void push_frame(frame *lines, int n1, int n2, int map[]);
-void swap(int *a, int *b);
 
 void wypisz(poly a);
