@@ -5,7 +5,6 @@ void base(int map[], poly res, int beg, int act)
     if(act==beg && res->num>3 && sweep(res)==1)
     {
         checkinside(res, map);
-        wypisz(res);
         return;
     }
     if(map[act+WIDTH]==1)
@@ -205,7 +204,7 @@ void checkinside(poly res, int map[])
 
 void buildbase(frame *lines, int map[])
 {
-    for(int i=0; i<HEIGHT*WIDTH, i++)
+    for(int i=0; i<HEIGHT*WIDTH; i++)
     {
         if(map[i]==2)
         {
@@ -216,50 +215,167 @@ void buildbase(frame *lines, int map[])
 
 void findbase(frame *lines, int map[], int index)
 {
-    if(map[index-1]==2)
+    map[index]=4;
+    if(map[index-1]==2 || map[index-1]==4)
     {
-        findbase(lines, map[], index-1);
+        if(map[index-1]==2)
+        {
+            findbase(lines, map, index-1);
+        }
     }
     else
     {
-        map[index-1]=3;
-        if(map[index-1]==1 || map[index-1]==3)
+        if(map[index-WIDTH]==1 || map[index-WIDTH]==3)
         {
-            if(map[index+WIDTH]==1)
-            {
-                map[index+WIDTH]=3;
-                push_frame(lines, index+WIDTH, index-1);
-            }
+            push_frame(lines, index-1, index-WIDTH, map);
         }
         else
         {
-            if(map[index+WIDTH-1]==1 || map[index+WIDTH==3])
+            if(map[index-WIDTH-1]==1 || map[index-WIDTH-1]==3)
             {
-
+                    push_frame(lines, index-1, index-WIDTH-1, map);
+            }
+        }
+        if(map[index+WIDTH]==1 || map[index+WIDTH]==3)
+        {
+            push_frame(lines, index-1, index+WIDTH, map);
+        }
+        else
+        {
+            if(map[index+WIDTH-1]==1 || map[index+WIDTH-1]==3)
+            {
+                push_frame(lines, index-1, index+WIDTH-1, map);
             }
         }
     }
-    if(map[index+1]==2)
+    if(map[index+1]==2 || map[index+1]==4)
     {
-        findbase(lines, map[], index+1);
+        if(map[index+1]==2)
+        {
+            findbase(lines, map, index+1);
+        }
     }
-    if(map[index-WIDTH]==2)
+    else
     {
-        findbase(lines, map[], index-WIDTH);
+        if(map[index-WIDTH]==1 || map[index-WIDTH]==3)
+        {
+                push_frame(lines, index+1, index-WIDTH, map);
+        }
+        else
+        {
+            if(map[index-WIDTH+1]==1 || map[index-WIDTH+1]==3)
+            {
+                push_frame(lines, index+1, index-WIDTH+1, map);
+            }
+        }
+        if(map[index+WIDTH]==1 || map[index+WIDTH]==3)
+        {
+            push_frame(lines, index+1, index+WIDTH, map);
+        }
+        else
+        {
+            if(map[index+WIDTH+1]==1 || map[index+WIDTH+1]==3)
+            {
+                push_frame(lines, index+1, index+WIDTH+1, map);
+            }
+        }
     }
-    if(map[index+WIDTH]==2)
+    if(map[index-WIDTH]==2 || map[index-WIDTH]==4)
     {
-        findbase(lines, map[], index+WIDTH);
+        if(map[index-WIDTH]==2)
+        {
+            findbase(lines, map, index-WIDTH);
+        }
+    }
+    else
+    {
+        if(map[index-1]==1 || map[index-1]==3)
+        {
+            push_frame(lines, index-1, index-WIDTH, map);
+        }
+        else
+        {
+            if(map[index-WIDTH-1]==1 || map[index-WIDTH-1]==3)
+            {
+                push_frame(lines, index-WIDTH, index-WIDTH-1, map);
+            }
+        }
+        if(map[index+1]==1 || map[index+1]==3)
+        {
+                push_frame(lines, index+1, index-WIDTH, map);
+        }
+        else
+        {
+            if(map[index-WIDTH+1]==1 || map[index-WIDTH+1]==3)
+            {
+                push_frame(lines, index-WIDTH, index-WIDTH+1, map);
+            }
+        }
+    }
+    if(map[index+WIDTH]==2 || map[index+WIDTH==4])
+    {
+        if(map[index+WIDTH]==2)
+        {
+            findbase(lines, map, index+WIDTH);
+        }
+    }
+    else
+    {
+        if(map[index-1]==1 || map[index-1]==3)
+        {
+                push_frame(lines, index-1, index+WIDTH, map);
+        }
+        else
+        {
+            if(map[index+WIDTH-1]==1 || map[index+WIDTH-1]==3)
+            {
+                    push_frame(lines, index+WIDTH, index+WIDTH-1, map);
+            }
+        }
+        if(map[index+1]==1 || map[index+1]==3)
+        {
+                push_frame(lines, index+1, index+WIDTH, map);
+        }
+        else
+        {
+            if(map[index+WIDTH+1]==1 || map[index+WIDTH+1]==3)
+            {
+                push_frame(lines, index+WIDTH, index+WIDTH+1, map);
+            }
+        }
     }
 }
 
-push_frame(frame *lines, int n1, int n2)
+void push_frame(frame *lines, int n1, int n2, int map[])
 {
+    map[n1]=3;
+    map[n2]=3;
+    if(n1>n2)
+    {
+        swap(&n1, &n2);
+    }
+    for(int i=0; i<lines->num; i++)
+    {
+        if(lines->line[i].x1+lines->line[i].y1*WIDTH==n1)
+        {
+            if(lines->line[i].x2+lines->line[i].y2*WIDTH==n2)
+            {
+                return;
+            }
+        }
+    }
     lines->line[lines->num].x1=n1%WIDTH;
     lines->line[lines->num].y1=n1/WIDTH;
     lines->line[lines->num].x2=n2%WIDTH;
     lines->line[lines->num].y2=n2/WIDTH;
     lines->num++;
+}
+
+void swap(int *a, int *b)
+{
+    int c=*a;
+    *a=*b;
+    *b=c;
 }
 
 void wypisz(poly a)
