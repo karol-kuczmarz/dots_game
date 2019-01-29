@@ -147,16 +147,43 @@ _Bool ifcross(seg a, seg b)
 
 _Bool ifinside(seg polynoid[], poly test, int point)
 {
-    int px=point%WIDTH, py=point/WIDTH;
-    int signum=sgn(det(polynoid[0].x1, polynoid[0].y1, polynoid[0].x2, polynoid[0].y2, px, py));
-    for(int i=1; i<test->num; i++)
+    int px=point%WIDTH, py=point/WIDTH, crossonright=0, crossonleft=0;
+    for(int i=0;  i<test->num; i++)
     {
-        if(signum!=sgn(det(polynoid[i].x1, polynoid[i].y1, polynoid[i].x2, polynoid[i].y2, px, py)))
+        if(test->node[i]!=point)
         {
-            return 0;
+            if(polynoid[i].y1==py && polynoid[i].y2>py)
+            {
+                if(polynoid[i].x1<px || polynoid[i].x2<px)
+                {
+                    crossonleft++;
+                }
+                else
+                {
+                    crossonright++;
+                }
+            }
+            else
+            {
+                if(polynoid[i].y1>py && polynoid[i].y2==py)
+                {
+                    if(polynoid[i].x1<px || polynoid[i].x2<px)
+                    {
+                        crossonleft++;
+                    }
+                    else
+                    {
+                        crossonright++;
+                    }
+                }
+            }
         }
     }
-    return 1;
+    if(crossonleft%2==1 && crossonright%2==1)
+    {
+        return 1;
+    }
+    return 0;
 }
 
 void checkinside(poly res, int map[])
@@ -331,7 +358,7 @@ void findbase(frame *lines, int map[], int index)
 
 void push_frame(frame *lines, int n1, int n2, int map[])
 {
-	if(map[n1]==4 || map[n2]==4) 
+	if(map[n1]==4 || map[n2]==4)
 	{
 		printf("%d %d \n", n1, n2);
 		for(int i=0; i<HEIGHT; i++)
