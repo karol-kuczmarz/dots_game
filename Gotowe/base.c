@@ -295,7 +295,7 @@ void findbase(frame *lines, int map[], int index)
             }
         }
     }
-    if(map[index+WIDTH]==2 || map[index+WIDTH==4])
+    if(map[index+WIDTH]==2 || map[index+WIDTH]==4)
     {
         if(map[index+WIDTH]==2)
         {
@@ -331,6 +331,18 @@ void findbase(frame *lines, int map[], int index)
 
 void push_frame(frame *lines, int n1, int n2, int map[])
 {
+	if(map[n1]==4 || map[n2]==4) 
+	{
+		printf("%d %d \n", n1, n2);
+		for(int i=0; i<HEIGHT; i++)
+		{
+			for(int j=0; j<WIDTH; j++)
+			{
+				printf("%d", map[i*WIDTH+j]);
+			}
+			printf("\n");
+		}
+	}
     map[n1]=3;
     map[n2]=3;
     if(n1>n2)

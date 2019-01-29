@@ -5,5 +5,5 @@
 
 #define RADIOUS 5
 #define GAP 25
-#define HEIGHT 30
-#define WIDTH 50
+#define HEIGHT 15
+#define WIDTH 20
