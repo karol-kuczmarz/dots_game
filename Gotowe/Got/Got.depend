@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1548691651 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/base.c
+	"base.h"
+
+1548711378 /home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/base.h
+	"support.h"
+
+1548711369 /home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/support.h
+	<stdio.h>
+
+1548710597 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/coordinates.c
+	"coordinates.h"
+
+1548711376 /home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/coordinates.h
+	"support.h"
+
+1548693579 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/move.c
+	"move.h"
+
+1548693413 /home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/move.h
+	"base.h"
+
+1548711370 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/Gotowe/support.c
+	"support.h"
+

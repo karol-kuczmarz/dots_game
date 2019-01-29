@@ -2,9 +2,10 @@
 1548691651 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.c
 	"base.h"
 
-1548691606 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.h
+1548710458 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/base.h
 	<stdio.h>
 	"supporting_functions.h"
+	"sizes.h"
 
 1548693776 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/main.c
 	"move.h"
@@ -20,8 +21,7 @@
 	"base.h"
 	<stdlib.h>
 
-1548691606 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/supporting_functions.h
-	<stdio.h>
+1548710836 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/supporting_functions.h
 
 1548693413 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/move.h
 	"base.h"
@@ -31,4 +31,13 @@
 
 1548691636 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/supporting_functions.c
 	"supporting_functions.h"
+
+1548710969 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/sizes.h
+	<stdio.h>
+
+1548710597 source:/home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/cooridnates.c
+	"coordinates.h"
+
+1548710685 /home/karol/Dokumenty/WDPC/ProjektWDPC/baza/base/coordinates.h
+	"sizes.h"
 
