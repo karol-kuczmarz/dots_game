@@ -1,17 +1,17 @@
 #include"base.h"
 
-void base(int map[], poly res, int beg, int act)
+void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIGHT)
 {
-    if(act==beg && res->num>3 && sweep(res)==1)
+    if(act==beg && res->num>3 && sweep(res, WIDTH, HEIGHT)==1)
     {
-        checkinside(res, map);
+        checkinside(res, map, WIDTH, HEIGHT);
         return;
     }
     if(map[act+WIDTH]==1)
     {
         map[act+WIDTH]=0;
         push_poly(res, act+WIDTH);
-        base(map, res, beg, act+WIDTH);
+        base(map, res, beg, act+WIDTH, WIDTH, HEIGHT);
         pop_poly(res);
         map[act+WIDTH]=1;
     }
@@ -19,7 +19,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act+WIDTH+1]=0;
         push_poly(res, act+WIDTH+1);
-        base(map, res, beg, act+WIDTH+1);
+        base(map, res, beg, act+WIDTH+1, WIDTH, HEIGHT);
         pop_poly(res);
         map[act+WIDTH+1]=1;
     }
@@ -27,7 +27,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act+WIDTH-1]=0;
         push_poly(res, act+WIDTH-1);
-        base(map, res, beg, act+WIDTH-1);
+        base(map, res, beg, act+WIDTH-1, WIDTH, HEIGHT);
         pop_poly(res);
         map[act+WIDTH-1]=1;
     }
@@ -35,7 +35,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act-WIDTH]=0;
         push_poly(res, act-WIDTH);
-        base(map, res, beg, act-WIDTH);
+        base(map, res, beg, act-WIDTH, WIDTH, HEIGHT);
         pop_poly(res);
         map[act-WIDTH]=1;
     }
@@ -43,7 +43,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act-WIDTH-1]=0;
         push_poly(res, act-WIDTH-1);
-        base(map, res, beg, act-WIDTH-1);
+        base(map, res, beg, act-WIDTH-1, WIDTH, HEIGHT);
         pop_poly(res);
         map[act-WIDTH-1]=1;
     }
@@ -51,7 +51,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act-WIDTH+1]=0;
         push_poly(res, act-WIDTH+1);
-        base(map, res, beg, act-WIDTH+1);
+        base(map, res, beg, act-WIDTH+1, WIDTH, HEIGHT);
         pop_poly(res);
         map[act-WIDTH+1]=1;
     }
@@ -59,7 +59,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act+1]=0;
         push_poly(res, act+1);
-        base(map, res, beg, act+1);
+        base(map, res, beg, act+1, WIDTH, HEIGHT);
         pop_poly(res);
         map[act+1]=1;
     }
@@ -67,7 +67,7 @@ void base(int map[], poly res, int beg, int act)
     {
         map[act-1]=0;
         push_poly(res, act-1);
-        base(map, res, beg, act-1);
+        base(map, res, beg, act-1, WIDTH, HEIGHT);
         pop_poly(res);
         map[act-1]=1;
     }
@@ -85,7 +85,7 @@ int pop_poly(poly a)
     return a->node[a->num];
 }
 
-_Bool sweep(poly test)
+_Bool sweep(poly test, int const WIDTH, int const HEIGHT)
 {
     _Bool online[test->num];
     seg lines[test->num];
@@ -145,7 +145,7 @@ _Bool ifcross(seg a, seg b)
 }
 
 
-_Bool ifinside(seg polynoid[], poly test, int point)
+_Bool ifinside(seg polynoid[], poly test, int point, int const WIDTH, int const HEIGHT)
 {
     int px=point%WIDTH, py=point/WIDTH, crossonright=0, crossonleft=0;
     for(int i=0;  i<test->num; i++)
@@ -186,7 +186,7 @@ _Bool ifinside(seg polynoid[], poly test, int point)
     return 0;
 }
 
-void checkinside(poly res, int map[])
+void checkinside(poly res, int map[], int const WIDTH, int const HEIGHT)
 {
     seg polynoid[res->num];
     for(int i=0; i<res->num-1; i++)
@@ -204,7 +204,7 @@ void checkinside(poly res, int map[])
     {
         if(map[i]==0)
         {
-            if(ifinside(polynoid, res, i)==1)
+            if(ifinside(polynoid, res, i, WIDTH, HEIGHT)==1)
             {
                 map[i]=2;
             }
@@ -212,49 +212,49 @@ void checkinside(poly res, int map[])
     }
 }
 
-void buildbase(frame *lines, int map[])
+void buildbase(frame *lines, int map[], int const WIDTH, int const HEIGHT)
 {
     for(int i=0; i<HEIGHT*WIDTH; i++)
     {
         if(map[i]==2)
         {
-            findbase(lines, map, i);
+            findbase(lines, map, i, WIDTH, HEIGHT);
         }
     }
 }
 
-void findbase(frame *lines, int map[], int index)
+void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEIGHT)
 {
     map[index]=4;
     if(map[index-1]==2 || map[index-1]==4)
     {
         if(map[index-1]==2)
         {
-            findbase(lines, map, index-1);
+            findbase(lines, map, index-1, WIDTH, HEIGHT);
         }
     }
     else
     {
         if(map[index-WIDTH]==1 || map[index-WIDTH]==3)
         {
-            push_frame(lines, index-1, index-WIDTH, map);
+            push_frame(lines, index-1, index-WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index-WIDTH-1]==1 || map[index-WIDTH-1]==3)
             {
-                    push_frame(lines, index-1, index-WIDTH-1, map);
+                    push_frame(lines, index-1, index-WIDTH-1, map, WIDTH, HEIGHT);
             }
         }
         if(map[index+WIDTH]==1 || map[index+WIDTH]==3)
         {
-            push_frame(lines, index-1, index+WIDTH, map);
+            push_frame(lines, index-1, index+WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index+WIDTH-1]==1 || map[index+WIDTH-1]==3)
             {
-                push_frame(lines, index-1, index+WIDTH-1, map);
+                push_frame(lines, index-1, index+WIDTH-1, map, WIDTH, HEIGHT);
             }
         }
     }
@@ -262,31 +262,31 @@ void findbase(frame *lines, int map[], int index)
     {
         if(map[index+1]==2)
         {
-            findbase(lines, map, index+1);
+            findbase(lines, map, index+1, WIDTH, HEIGHT);
         }
     }
     else
     {
         if(map[index-WIDTH]==1 || map[index-WIDTH]==3)
         {
-                push_frame(lines, index+1, index-WIDTH, map);
+                push_frame(lines, index+1, index-WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index-WIDTH+1]==1 || map[index-WIDTH+1]==3)
             {
-                push_frame(lines, index+1, index-WIDTH+1, map);
+                push_frame(lines, index+1, index-WIDTH+1, map, WIDTH, HEIGHT);
             }
         }
         if(map[index+WIDTH]==1 || map[index+WIDTH]==3)
         {
-            push_frame(lines, index+1, index+WIDTH, map);
+            push_frame(lines, index+1, index+WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index+WIDTH+1]==1 || map[index+WIDTH+1]==3)
             {
-                push_frame(lines, index+1, index+WIDTH+1, map);
+                push_frame(lines, index+1, index+WIDTH+1, map, WIDTH, HEIGHT);
             }
         }
     }
@@ -294,31 +294,31 @@ void findbase(frame *lines, int map[], int index)
     {
         if(map[index-WIDTH]==2)
         {
-            findbase(lines, map, index-WIDTH);
+            findbase(lines, map, index-WIDTH, WIDTH, HEIGHT);
         }
     }
     else
     {
         if(map[index-1]==1 || map[index-1]==3)
         {
-            push_frame(lines, index-1, index-WIDTH, map);
+            push_frame(lines, index-1, index-WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index-WIDTH-1]==1 || map[index-WIDTH-1]==3)
             {
-                push_frame(lines, index-WIDTH, index-WIDTH-1, map);
+                push_frame(lines, index-WIDTH, index-WIDTH-1, map, WIDTH, HEIGHT);
             }
         }
         if(map[index+1]==1 || map[index+1]==3)
         {
-                push_frame(lines, index+1, index-WIDTH, map);
+                push_frame(lines, index+1, index-WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index-WIDTH+1]==1 || map[index-WIDTH+1]==3)
             {
-                push_frame(lines, index-WIDTH, index-WIDTH+1, map);
+                push_frame(lines, index-WIDTH, index-WIDTH+1, map, WIDTH, HEIGHT);
             }
         }
     }
@@ -326,37 +326,37 @@ void findbase(frame *lines, int map[], int index)
     {
         if(map[index+WIDTH]==2)
         {
-            findbase(lines, map, index+WIDTH);
+            findbase(lines, map, index+WIDTH, WIDTH, HEIGHT);
         }
     }
     else
     {
         if(map[index-1]==1 || map[index-1]==3)
         {
-                push_frame(lines, index-1, index+WIDTH, map);
+                push_frame(lines, index-1, index+WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index+WIDTH-1]==1 || map[index+WIDTH-1]==3)
             {
-                    push_frame(lines, index+WIDTH, index+WIDTH-1, map);
+                    push_frame(lines, index+WIDTH, index+WIDTH-1, map, WIDTH, HEIGHT);
             }
         }
         if(map[index+1]==1 || map[index+1]==3)
         {
-                push_frame(lines, index+1, index+WIDTH, map);
+                push_frame(lines, index+1, index+WIDTH, map, WIDTH, HEIGHT);
         }
         else
         {
             if(map[index+WIDTH+1]==1 || map[index+WIDTH+1]==3)
             {
-                push_frame(lines, index+WIDTH, index+WIDTH+1, map);
+                push_frame(lines, index+WIDTH, index+WIDTH+1, map, WIDTH, HEIGHT);
             }
         }
     }
 }
 
-void push_frame(frame *lines, int n1, int n2, int map[])
+void push_frame(frame *lines, int n1, int n2, int map[], int const WIDTH, int const HEIGHT)
 {
 	if(map[n1]==4 || map[n2]==4)
 	{

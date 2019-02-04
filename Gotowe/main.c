@@ -16,7 +16,8 @@ MAP LEGEND:
 
 */
 
-int map[WIDTH*HEIGHT]={0};
+int map[WIDTH_MAX*HEIGHT_MAX]={0};
+int WIDTH, HEIGHT;
 frame my_frame;
 frame opp_frame;
 int opp_points=0;
@@ -31,6 +32,8 @@ int main(int argc, char *argv[])
 {
 	my_frame.num=0;
 	opp_frame.num=0;
+    WIDTH=25;
+    HEIGHT=20;
 
   	GtkWidget *drawing_area;
 	GtkWidget *layout;
@@ -86,9 +89,9 @@ static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpo
 	if (event->button == GDK_BUTTON_PRIMARY)
     {
 		vec pom=dot_clicked(event->x, event->y);
-		if(verify_click(map, pom)==1)
+		if(verify_click(map, pom, WIDTH, HEIGHT)==1)
 		{
-			move(map, &my_frame, pom.x+pom.y*WIDTH, &opp_points, &my_points);
+			move(map, &my_frame, pom.x+pom.y*WIDTH, &opp_points, &my_points, WIDTH, HEIGHT);
     		gtk_widget_queue_draw(widget);
 		}
 	}

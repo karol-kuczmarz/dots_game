@@ -8,4 +8,4 @@ struct Vector
 }vec;
 
 vec dot_clicked(double x, double y);
-_Bool verify_click(int map[], vec test);
+_Bool verify_click(int map[], vec test, int const WIDTH, int const HEIGHT);

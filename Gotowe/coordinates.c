@@ -34,7 +34,7 @@ vec dot_clicked(double x, double y)
     return answer;
 }
 
-_Bool verify_click(int map[], vec test)
+_Bool verify_click(int map[], vec test, int const WIDTH, int const HEIGHT)
 {
 	if(test.x<=0 || test.y<=0 || test.x>=WIDTH-1 || test.y>=HEIGHT-1)
 	{
