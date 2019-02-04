@@ -1,5 +1,6 @@
 #include"move.h"
 #include"coordinates.h"
+#include"communication.h"
 
 
 /*
@@ -22,14 +23,17 @@ frame my_frame;
 frame opp_frame;
 int opp_points=0;
 int my_points=0;
+_Bool my_turn;
 
 static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer data);
 static gboolean create_map(GtkWidget *widget, cairo_t *cr, gpointer user_data);
 static gboolean new_game(GtkWidget *widget, gpointer data);
+static int opponents_move(gpointer data);
 
 
 int main(int argc, char *argv[])
 {
+    fifo_init(argc, argv);
 	my_frame.num=0;
 	opp_frame.num=0;
     WIDTH=25;
@@ -75,6 +79,8 @@ int main(int argc, char *argv[])
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
  	gtk_window_set_title(GTK_WINDOW(window), "Kropki");
 
+ 	g_timeout_add(100, opponents_move, window);
+
  	gtk_widget_show_all(window);
 
 	gtk_main();
@@ -84,6 +90,8 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
+
 static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
 	if (event->button == GDK_BUTTON_PRIMARY)
@@ -92,6 +100,7 @@ static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpo
 		if(verify_click(map, pom, WIDTH, HEIGHT)==1)
 		{
 			move(map, &my_frame, pom.x+pom.y*WIDTH, &opp_points, &my_points, WIDTH, HEIGHT);
+			send_info(pom.x+pom.y*WIDTH);
     		gtk_widget_queue_draw(widget);
 		}
 	}
@@ -170,4 +179,14 @@ static gboolean new_game(GtkWidget *widget, gpointer data)
 	return TRUE;
 }
 
-
+static int opponents_move(gpointer data)
+{
+    int opp;
+    get_info(&opp);
+    if(opp>=0)
+    {
+        move(map, &my_frame, opp, &opp_points, &my_points, WIDTH, HEIGHT);
+        gtk_widget_queue_draw(GTK_WIDGET(data));
+    }
+    return 1;
+}
