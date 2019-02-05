@@ -1,17 +1,17 @@
 #include"base.h"
 
-void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIGHT)
+void base(int maporg[], int map[], int map_help[], poly res, int beg, int act, int const WIDTH, int const HEIGHT)
 {
     if(act==beg && res->num>3 && sweep(res, WIDTH, HEIGHT)==1)
     {
-        checkinside(res, map, WIDTH, HEIGHT);
+        checkinside(res, maporg, map, map_help, WIDTH, HEIGHT);
         return;
     }
     if(map[act+WIDTH]==1)
     {
         map[act+WIDTH]=0;
         push_poly(res, act+WIDTH);
-        base(map, res, beg, act+WIDTH, WIDTH, HEIGHT);
+        base(maporg, map, map_help, res, beg, act+WIDTH, WIDTH, HEIGHT);
         pop_poly(res);
         map[act+WIDTH]=1;
     }
@@ -19,7 +19,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act+WIDTH+1]=0;
         push_poly(res, act+WIDTH+1);
-        base(map, res, beg, act+WIDTH+1, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act+WIDTH+1, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act+WIDTH+1]=1;
     }
@@ -27,7 +30,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act+WIDTH-1]=0;
         push_poly(res, act+WIDTH-1);
-        base(map, res, beg, act+WIDTH-1, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act+WIDTH-1, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act+WIDTH-1]=1;
     }
@@ -35,7 +41,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act-WIDTH]=0;
         push_poly(res, act-WIDTH);
-        base(map, res, beg, act-WIDTH, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act-WIDTH, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act-WIDTH]=1;
     }
@@ -43,7 +52,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act-WIDTH-1]=0;
         push_poly(res, act-WIDTH-1);
-        base(map, res, beg, act-WIDTH-1, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act-WIDTH-1, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act-WIDTH-1]=1;
     }
@@ -51,7 +63,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act-WIDTH+1]=0;
         push_poly(res, act-WIDTH+1);
-        base(map, res, beg, act-WIDTH+1, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act-WIDTH+1, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act-WIDTH+1]=1;
     }
@@ -59,7 +74,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act+1]=0;
         push_poly(res, act+1);
-        base(map, res, beg, act+1, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act+1, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act+1]=1;
     }
@@ -67,7 +85,10 @@ void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIG
     {
         map[act-1]=0;
         push_poly(res, act-1);
-        base(map, res, beg, act-1, WIDTH, HEIGHT);
+        if(sweep(res, WIDTH, HEIGHT)==1)
+        {
+            base(maporg, map, map_help, res, beg, act-1, WIDTH, HEIGHT);
+        }
         pop_poly(res);
         map[act-1]=1;
     }
@@ -150,6 +171,7 @@ _Bool ifinside(seg polynoid[], poly test, int point, int const WIDTH, int const 
     int px=point%WIDTH, py=point/WIDTH, crossonright=0, crossonleft=0;
     for(int i=0;  i<test->num; i++)
     {
+
         if(test->node[i]!=point)
         {
             if(polynoid[i].y1==py && polynoid[i].y2>py)
@@ -178,6 +200,10 @@ _Bool ifinside(seg polynoid[], poly test, int point, int const WIDTH, int const 
                 }
             }
         }
+        else
+        {
+            return 0;
+        }
     }
     if(crossonleft%2==1 && crossonright%2==1)
     {
@@ -186,7 +212,7 @@ _Bool ifinside(seg polynoid[], poly test, int point, int const WIDTH, int const 
     return 0;
 }
 
-void checkinside(poly res, int map[], int const WIDTH, int const HEIGHT)
+void checkinside(poly res, int maporg[], int map[], int map2[], int const WIDTH, int const HEIGHT)
 {
     seg polynoid[res->num];
     for(int i=0; i<res->num-1; i++)
@@ -202,11 +228,15 @@ void checkinside(poly res, int map[], int const WIDTH, int const HEIGHT)
     polynoid[res->num-1].y2=res->node[0]/WIDTH;
     for(int i=0; i<HEIGHT*WIDTH; i++)
     {
-        if(map[i]==0)
+        if(ifinside(polynoid, res, i, WIDTH, HEIGHT)==1)
         {
-            if(ifinside(polynoid, res, i, WIDTH, HEIGHT)==1)
+            if(map[i]==0 && maporg[i]!=5)
             {
                 map[i]=2;
+            }
+            else
+            {
+                map2[i]=2;
             }
         }
     }
@@ -358,18 +388,6 @@ void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEI
 
 void push_frame(frame *lines, int n1, int n2, int map[], int const WIDTH, int const HEIGHT)
 {
-	if(map[n1]==4 || map[n2]==4)
-	{
-		printf("%d %d \n", n1, n2);
-		for(int i=0; i<HEIGHT; i++)
-		{
-			for(int j=0; j<WIDTH; j++)
-			{
-				printf("%d", map[i*WIDTH+j]);
-			}
-			printf("\n");
-		}
-	}
     map[n1]=3;
     map[n2]=3;
     if(n1>n2)

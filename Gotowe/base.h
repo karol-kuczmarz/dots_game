@@ -26,13 +26,13 @@ struct Frame
 }
 frame;
 
-void base(int map[], poly res, int beg, int act, int const WIDTH, int const HEIGHT);
+void base(int maporg[], int map[], int map_help[], poly res, int beg, int act, int const WIDTH, int const HEIGHT);
 void push_poly(poly a, int number);
 int pop_poly(poly a);
 _Bool sweep(poly test, int const WIDTH, int const HEIGHT);
 _Bool ifcross(seg a, seg b);
 _Bool ifinside(seg polynoid[], poly test, int point, int const WIDTH, int const HEIGHT);
-void checkinside(poly res, int map[], int const WIDTH, int const HEIGHT);
+void checkinside(poly res, int maporg[],  int map[], int map2[], int const WIDTH, int const HEIGHT);
 void buildbase(frame *lines, int map[], int const WIDTH, int const HEIGHT);
 void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEIGHT);
 void push_frame(frame *lines, int n1, int n2, int map[], int const WIDTH, int const HEIGHT);

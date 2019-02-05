@@ -17,22 +17,38 @@ MAP LEGEND:
 
 */
 
+/*
+NEW MAP LEGEND
+0 - empty dot
+1 - occupied dot
+2 - dot that needs borders
+3 - dat that is a part of a border
+4 - opponent's dot in my base
+5 - my dot inside my base
+6 - my dot inside opponents base
+7 - noone's dot inside base
+*/
+
 int map[WIDTH_MAX*HEIGHT_MAX]={0};
 int WIDTH, HEIGHT;
 frame my_frame;
 frame opp_frame;
 int opp_points=0;
 int my_points=0;
-_Bool my_turn;
+_Bool my_turn=1;
+GtkWidget *mypoints_info;
+GtkWidget *opppoints_info;
 
 static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer data);
 static gboolean create_map(GtkWidget *widget, cairo_t *cr, gpointer user_data);
 static gboolean new_game(GtkWidget *widget, gpointer data);
 static int opponents_move(gpointer data);
+static void points_update(void);
 
 
 int main(int argc, char *argv[])
 {
+    if(argv[1][0]=='B') my_turn=0;
     fifo_init(argc, argv);
 	my_frame.num=0;
 	opp_frame.num=0;
@@ -46,6 +62,7 @@ int main(int argc, char *argv[])
 	GtkWidget *close_button;
 	GtkWidget *buttons;
 	GtkWidget *vert_line;
+	GtkWidget *hor_line;
 	GtkWidget *window;
 
 
@@ -56,15 +73,21 @@ int main(int argc, char *argv[])
 	layout=gtk_grid_new();
 	buttons=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	vert_line=gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+	hor_line=gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
 	newgame_button=gtk_button_new_with_label("New game");
 	surrender_button=gtk_button_new_with_label("Surrender");
 	close_button=gtk_button_new_with_label("Close game");
+	mypoints_info=gtk_label_new("My score: 0");
+	opppoints_info=gtk_label_new("Opponent's score: 0");
 
 	gtk_widget_set_size_request (drawing_area, GAP*(WIDTH-1), GAP*(HEIGHT-1));
 	gtk_grid_attach(GTK_GRID(layout), drawing_area, 0, 0, WIDTH, HEIGHT);
 	gtk_box_pack_start(GTK_BOX(buttons), newgame_button, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(buttons), surrender_button, TRUE, TRUE, 0);
 	gtk_box_pack_start(GTK_BOX(buttons), close_button, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(buttons), hor_line, FALSE, TRUE, 3);
+	gtk_box_pack_start(GTK_BOX(buttons), mypoints_info, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(buttons), opppoints_info, FALSE, TRUE, 0);
 	gtk_grid_attach(GTK_GRID(layout), vert_line, WIDTH, 0, 1, HEIGHT);
 	gtk_grid_attach(GTK_GRID(layout), buttons, WIDTH+1, 0, 1, HEIGHT);
 
@@ -94,6 +117,10 @@ int main(int argc, char *argv[])
 
 static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
+    if(my_turn==0)
+    {
+        return FALSE;
+    }
 	if (event->button == GDK_BUTTON_PRIMARY)
     {
 		vec pom=dot_clicked(event->x, event->y);
@@ -102,6 +129,7 @@ static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpo
 			move(map, &my_frame, pom.x+pom.y*WIDTH, &opp_points, &my_points, WIDTH, HEIGHT);
 			send_info(pom.x+pom.y*WIDTH);
     		gtk_widget_queue_draw(widget);
+    		my_turn=0;
 		}
 	}
 	return 1;
@@ -109,6 +137,7 @@ static gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpo
 
 static gboolean create_map(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 {
+    points_update();
 	for(int i=0; i<my_frame.num; i++)
 	{
 		cairo_set_source_rgb(cr, 0.9, 0.0, 0.0);
@@ -130,19 +159,19 @@ static gboolean create_map(GtkWidget *widget, cairo_t *cr, gpointer user_data)
 	{
 		for(int j=1; j<WIDTH-1; j++)
 		{
-			if(map[i*WIDTH+j]<0)
+			if(map[i*WIDTH+j]<0 && map[i*WIDTH+j]>-7)
 			{
 				cairo_set_source_rgb(cr, 0, 0, 1.0);
 			}
 			else
 			{
-				if(map[i*WIDTH+j]>0 && map[i*WIDTH+j]<6)
+				if(map[i*WIDTH+j]>0 && map[i*WIDTH+j]<7)
 				{
 					cairo_set_source_rgb(cr, 1.0, 0, 0);
 				}
 				else
 				{
-					if(map[i*WIDTH+j]==6)
+					if(map[i*WIDTH+j]==7 || map[i*WIDTH+j]==-7)
 					{
 						cairo_set_source_rgb(cr, 0.512, 0.512, 0.512);
 					}
@@ -181,12 +210,40 @@ static gboolean new_game(GtkWidget *widget, gpointer data)
 
 static int opponents_move(gpointer data)
 {
+    if(my_turn==1)
+    {
+        return 1;
+    }
     int opp;
     get_info(&opp);
     if(opp>=0)
     {
-        move(map, &my_frame, opp, &opp_points, &my_points, WIDTH, HEIGHT);
+        for(int i=0; i<HEIGHT; i++)
+        {
+            for(int j=0; j<WIDTH; j++)
+            {
+                map[i*WIDTH+j]=-map[i*WIDTH+j];
+            }
+        }
+        move(map, &opp_frame, opp, &my_points, &opp_points, WIDTH, HEIGHT);
+        for(int i=0; i<HEIGHT; i++)
+        {
+            for(int j=0; j<WIDTH; j++)
+            {
+                map[i*WIDTH+j]=-map[i*WIDTH+j];
+            }
+        }
         gtk_widget_queue_draw(GTK_WIDGET(data));
+        my_turn=1;
     }
     return 1;
+}
+
+static void points_update(void)
+{
+    char text[30];
+    sprintf(text, "My score: %d", my_points);
+    gtk_label_set_text(GTK_LABEL(mypoints_info), text);
+    sprintf(text, "Opponent's score: %d", opp_points);
+    gtk_label_set_text(GTK_LABEL(opppoints_info), text);
 }
