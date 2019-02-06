@@ -206,8 +206,8 @@ void main_window(int size)
 {
     if(size==1 || size==4)
     {
-        WIDTH=4;
-        HEIGHT=4;
+        WIDTH=14;
+        HEIGHT=11;
         version='S';
     }
     else
