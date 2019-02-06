@@ -236,7 +236,10 @@ void checkinside(poly res, int maporg[], int map[], int map2[], int const WIDTH,
             }
             else
             {
-                map2[i]=2;
+                if(map[i]==0)
+                {
+                    map2[i]=2;
+                }
             }
         }
     }
@@ -256,7 +259,7 @@ void buildbase(frame *lines, int map[], int const WIDTH, int const HEIGHT)
 void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEIGHT)
 {
     map[index]=4;
-    if(map[index-1]==2 || map[index-1]==4)
+    if(map[index-1]==2 || map[index-1]==4 || map[index-1]==-1)
     {
         if(map[index-1]==2)
         {
@@ -288,7 +291,7 @@ void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEI
             }
         }
     }
-    if(map[index+1]==2 || map[index+1]==4)
+    if(map[index+1]==2 || map[index+1]==4 || map[index+1]==-1)
     {
         if(map[index+1]==2)
         {
@@ -320,7 +323,7 @@ void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEI
             }
         }
     }
-    if(map[index-WIDTH]==2 || map[index-WIDTH]==4)
+    if(map[index-WIDTH]==2 || map[index-WIDTH]==4 || map[index-WIDTH]==-1)
     {
         if(map[index-WIDTH]==2)
         {
@@ -352,7 +355,7 @@ void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEI
             }
         }
     }
-    if(map[index+WIDTH]==2 || map[index+WIDTH]==4)
+    if(map[index+WIDTH]==2 || map[index+WIDTH]==4 || map[index+WIDTH]==-1)
     {
         if(map[index+WIDTH]==2)
         {

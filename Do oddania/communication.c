@@ -19,8 +19,19 @@ void get_info(int *ans)
     char text[10];
     if(getStringFromPipe(Channel, text, 10)==1)
     {
-        *ans=string_to_int(text);
-        return;
+        if(isdigit(text[0]))
+        {
+            *ans=string_to_int(text);
+            return;
+        }
+        else
+        {
+            if(isdigit(text[1]))
+            {
+            *ans=-string_to_int(text+1);
+            return;
+            }
+        }
     }
     *ans=-1;
 }
