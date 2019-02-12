@@ -1,0 +1,443 @@
+\documentclass{article}
+% Kodowanie latain 2
+%\usepackage[latin2]{inputenc}
+\usepackage[T1]{fontenc}
+% Można też użyć UTF-8
+\usepackage[utf8]{inputenc}
+
+\usepackage{enumerate}
+% Język
+\usepackage[polish]{babel}
+% \usepackage[english]{babel}
+\usepackage{verbatim}
+% Rózne przydatne paczki:
+% - znaczki matematyczne
+\usepackage{amsmath, amsfonts}
+% - wcięcie na początku pierwszego akapitu
+\usepackage{indentfirst}
+% - komenda \url 
+\usepackage{hyperref}
+% - dołączanie obrazków
+\usepackage{graphics}
+% - szersza strona
+\usepackage[nofoot,hdivide={2cm,*,2cm},vdivide={2cm,*,2cm}]{geometry}
+\frenchspacing
+% - brak numerów stron
+\pagestyle{empty}
+
+\usepackage{dirtytalk}
+
+% dane autora
+\author{Karol Kuczmarz, 308845}
+\title{Kropki - opis struktury programu}
+\date{\today}
+
+% początek dokumentu
+\begin{document}
+\maketitle
+
+\tableofcontents{}
+\newpage
+
+\section{Wstęp}
+
+Kod źródłowy jest podzielony na 7 modułów, z których korzyszta plik "main.c". W każdym rodziale opiszę poszczególne funkcje i sposób, w jaki działają.
+
+\section{Main}
+
+\begin{enumerate}
+\item Zmienne globalne
+
+\begin{enumerate}
+
+\item \textunderscore Bool isa
+
+Rozróżniaa, czy program ma obsługiwać gracza A (wartośc 1) czy gracza B (wartość 0).
+
+\item GtkWidget *small\textunderscore board
+
+Przechowuje przycisk, którym wybieramy małą planszę.
+
+\item GtkWidget *medium\textunderscore board
+
+Przechowuje przycisk, którym wybieramy średnią planszę.
+
+\item GtkWidget *big\textunderscore board
+
+Przechowuje przycisk, którym wybieramy dużą planszę.
+
+\end{enumerate}
+
+\item void i\textunderscore main\textunderscore window(GtkWidget *widget)
+
+Zmienna widget przekazywana do funkcji jest przyciskiem odpowiadającym za wybór wielkości planszy. Funckja uruchamia funkcję \say{main\textunderscore window} z odpowiednim parametrem informującym o wielkośći planszy i graczu (A czy B). Ponadto przekazuje do pliku kolejkowego informację o wybranej wielkości planszy.
+
+\item int main(int argc, char *argv[])
+
+W tej funckji tworzone jest okno startowe, w którym wybiera się wielkość planszy. Wywołuje się także funkcję tworzącą pliki kolejkowe.
+
+\end{enumerate}
+
+\section{Moduł board}
+
+\begin{enumerate}
+\item Zmienne globalne
+
+\begin{enumerate}
+
+\item int map[WIDTH\textunderscore MAX*HEIGHT\textunderscore MAX]={0};
+
+Tablica przechowuje informacje o kropkach na planszy. Opis wartości (gdy podane wartśći zapiszemy z minusem, otrzymamy oznaczenia dla kropek przeciwnika).
+\begin{enumerate}
+
+\item 0
+
+Pusta kropka, którą można zaznaczyć.
+
+\item 1
+
+Zajęta przez gracza, niemająca znaczenia kropka.
+
+\item 2
+
+Kropka, która została otoczona, ale program nie znalazł jeszcze dla niej bazy.
+
+\item 3
+
+Kropka gracza, która jest częścią granicy.
+
+\item 4
+
+Kropka przeciwnika, która znajduje się w bazie gracza.
+
+\item 5
+
+Kropka gracza w jego bazie (niekoniecznie narysowanej na ekranie).
+
+\item 6
+
+Kropka gracza w bazie przeciwnika.
+
+\item 7
+
+Niezaznaczona kropka w czyjejś bazie.
+
+\end{enumerate}
+
+\item int WIDTH
+
+Szerokośc planszy powiększona o dwa (wyrażona w liczbie kropek).
+
+\item int HEIGHT
+
+Wysokość planszy powiększona o dwa (wyrażona w liczbie kropek).
+
+\item frame my\textunderscore frame
+
+Zawiera połączenia między sąsiednimi kropkami tworzącymi bazy gracza.
+
+\item framme opp\textunderscore frame
+
+Zawiera połączenia między sąsiednimi kropkami tworzącymi bazy przeciwnika.
+
+\item int opp\textunderscore points
+
+Przechowuje liczbę punktów przeciwnika.
+
+\item int my\textunderscore points
+
+Przechowuje liczbę punktów gracza.
+
+\item int version
+
+Przechowuje wielkość planszy.
+
+\item \textunderscore Bool my\textunderscore turn
+
+Infomruje, czy teraz jest kolejka gracza.
+
+\item \textunderscore Bool small\textunderscore window\textunderscore opened
+
+Infomruje, czy jest otworzone małe okno (związane z rozpoczęciem nowej gry bądź zamknięciem gry).
+
+\item \textunderscore  Bool main\textunderscore widnow\textunderscore opened
+
+Informuje, czy gra została już uruchomiona.
+
+\item GtkWidget *mypoints\textunderscore info
+
+Przechowuje adres zmiennej GTK\textunderscore LABEL, która wyświetla liczbę punktów gracza.
+
+\item GtkWidget *opppoints\textunderscore info
+
+Przechowuje adres zmiennej GTK\textunderscore LABEL, która wyświetla liczbę punktów przeciwnika.
+
+\item GtkWidget *window
+
+Przechowuje oknko rozgrywki.
+
+\item GtkWidget *whose\textunderscore turn
+
+Przechowuje adres zmiennej GTK\textunderscore LABEL, która wyświetla, czy jest teraz tura gracza czy nie.
+
+\end{enumerate}
+
+\item gboolean button\textunderscore press\textunderscore event(GtkWidget *widget, GdkEventButton *event, gpointer data)
+
+Gdy jest teraz kolejka gracza oraz nie ma otwartego żadnego okna pomocniczego (np. o rozpoczęciu nowej gry), sprawdza, czy kliknięcie trafia w kropkę. Jeśli trafi i ruch jest legalny, to wyoknuje, wywołuje rysownie planszy oraz gdy już nie ma więcej pustych kropek, kończy grę.
+
+\item gboolean create\textunderscore map(GtkWidget *widget, cairo\textunderscore t *cr, gpointer user\textunderscore data)
+
+Rysuje planszę. Najpierw linie tworzące ewentualne bazy, a potem kropki w odpowiednich kolorach.
+
+\item void new\textunderscore game(\textunderscore Bool isA)
+
+Rozpoczyna nową grę. Zeruje zmienne globalne takie jak punkty oraz usuwa informacje o połączeniach między kropkami tworzącymi bazy. 
+
+\item int opponents\textunderscore move(gpointer data)
+
+Zarządza informacjami uzyskiwanymi z pliku kolejkowego. Gdy przeciwnik wykonał ruch, obsługuje go wywołując funkcje analizy ruchu i rysowania. Przetwarza też informacje o wielkoścli planaszy przeciwnika i o ewentualnym opuszczeniu przez niego gry.
+
+\item void points\textunderscore update(void)
+
+Wpisuje do zmiennym GTK\textunderscore LABEL mypoints\textunderscore info i opppoints\textunderscore info zaktualizowane liczby punktów.
+
+\item void new\textunderscore game\textunderscore window(GtkWidget *widget, gpointer data)
+
+Otwiera okno, w którym użytkownik podejmuje decyzję o rozpoczęciu nowej gry, czyli poddaniu rozgrywki i powrtou do okna startowego.
+
+\item gboolean close\textunderscore main\textunderscore window(GtkWidget *widget, gpointer data)
+
+Zamyka okno z grą, przy okazji tekża okno, w którym podejmowało się decyzję o opuszeczeniu gry. Ustawia zmienne globalne informujące o tym, czy duże/małe okno jest otwarte tak, by informawały, że nie jest.
+
+\item gboolean close\textunderscore small\textunderscore window(GtkWidget *widget, gpointer data)
+
+Zamyka małe okno (związane np. z ropoczęciem nowej gry).
+
+\item void main\textunderscore window(int size)
+
+To jest funkcja, która tworzy okno z grą. Najpierw ustawia zmienne WIDTH, HEIGHT i version na odpowiednie względem argumentu wywołania programu. Później tworzy odpowiednie zmienne GTK\textunderscore WIDGET i pakuje je do GTK\textunderscore GRID. Przypisuje funkcje odpowiednim zdarzeniom.
+
+\item void close\textunderscore main\textunderscore window\textunderscore alert()
+
+Otwiera okno, gdy gracz chce opuścić grę, prosząc go o potwierdzenie swojej decyzji. Jeżeli gracz potwierdzi, to zamyka cały porgram.
+
+\item void check\textunderscore version(int sign)
+
+Sprawdza, czy podany jako argument rozmiar planszy przeciwnika zgadza się z rozmiarem planszy gracza. Jeżeli nie, to zamyka program i informuje o błędzie.
+
+\item \textunderscore Bool the\textunderscore end(void)
+
+Sprawdza, czy na planszy są jeszcze jakieś puste kropki, które można zaznaczyć.
+
+\item void end\textunderscore game\textunderscore window(void)
+
+Fukcja otwiera okno, w którym informuje o tym, kto wygrał i podaje zdobyte przez graczy punkty. Następnie zamyka okno z grą.
+
+\item void update\textunderscore whose\textunderscore turn()
+
+Zmienia odpowiednio zmienną whose\textunderscore turn tak, by informwała, czyja jest teraz kolej.
+
+\item void inform\textunderscore opp(GtkWidget *widget, gpointer data)
+
+Wysyła informację do pliku kolejkowego o tym, że gracz opuścił grę.
+
+\item void opponent\textunderscore left(void)
+
+Otwiera okno, w którym informuje, że przeciwnik się poddał. Pokazuje wynik a później zamyka okno z grą.
+
+\end{enumerate}
+
+\section{Moduł move}
+
+\begin{enumerate}
+
+\item void move(int map[], frame *lines, int chosen, int *opp\textunderscore points, int *my\textunderscore points, int const WIDTH, int const HEIGHT)
+
+Wywołuje po kolei odpowiednie funkcje z modułu base, przekazując odpowiednio uproszczone wersje planszy.
+
+\item void pointsandverify(int map[], int mapcopy[], int mapcopy2[], int *opp\textunderscore points, int *my\textunderscore points, int const WIDTH, int const HEIGHT)
+
+Porównuje uproszczoną planszę powstałą w fukcji move z oryginalną. Przyznaje punkty.
+
+\end{enumerate}
+
+\section{Moduł base}
+
+\begin{enumerate}
+
+\item Struktury
+
+\begin{enumerate}
+
+\item Polygon
+
+Zawiera kolejne wierzchołki łamanej w układzie współrzędnych. Zmienna num informuje o liczbie wierzchołków w łamanej a tablica node zawiera kolejne wierzchołki.
+
+\item Segment
+
+Zawiera całkowite współrzędne końców odcinka.
+
+\item Frame
+
+Zaweria informację o tym, które wierzchółki tworzą ze sobą bazę - dokładniej tablicę struktur Segment zawierającą wierzchołki, które trzeba ze sobą połączyć. Zmienna num mówi, ile jest takich odcinków.
+
+\end{enumerate}
+
+\item void base(int maporg[], int map[], int map\textunderscore help[], poly res, int beg, int act, int const WIDTH, int const HEIGHT)
+
+Poprzez przeszukiwanie z nawrotami tworzy wszystkie możliwe łamane z punktu, który został zaznaczony. By zmniejszyć złożoność korzysta z algorytmu  miotły (gdy dwa odcinki w łamanej się przecinają w punkcie o niecałkowitych współrzędnych nie brnie w tę gałąź rekurencji). Gdy trafi z powrotem do punktu wyjścia wywołuje funckję, która sprawdza, które punkty są wewnątrz wielokąta.
+
+\item void push\textunderscore poly(poly a, int number)
+
+Dodaje do struktury Polygon nowy wierzchołek. Wstawia go do pierwszego wolnego indekksu w tablicy.
+
+\item int pop\textunderscore poly(poly a)
+
+Usuwa ostatni element tablicy w strukturze Polygon.
+
+\item \textunderscore Bool sweep(poly test, int const WIDTH, int const HEIGHT)
+
+Algorytm miotły. Najpierw tworzy tablicę odcinków wchodzącą w skład krzywej. Później przez układ współrzędnych przepuszcza poziomą linię. Gdy odcinek leży na tej linii, to jest dodawany do puli odcinków, które sprawdza się, czy wzajmenie się ze sobą krzyżują.
+
+\item \textunderscore Bool ifcross(seg a, seg b)
+
+Sprawdza, czy dwa odcinki krzyżują się ze sobą w punkcie nie będącym końcem któregoś z odcinków. Korzysta w wyznacznika.
+
+\item \textunderscore Bool ifinside(seg polynoid[], poly test, int point, int const WIDTH, int const HEIGHT)
+
+Sprawdza, czy dany wierzchołek leży wewnątrz wielokąta. Prowadzi poziomą kreskę przez punkt i liczy liczbę przecięć z wielokątem po prawej i lewej stronie.
+
+\item void checkinside(poly res, int maporg[], int map[], int map2[], int const WIDTH, int const HEIGHT)
+
+Tworzy tablicę odcinków wchodzących w skład wielokąta. Dla każdego punktu z planszy poprzez funkcję ifinside sprawdza, czy punkt leży wewnątrz. Jeżeli tak, to zmienia jego wartość w tablicy.
+
+\item void buildbase(frame *lines, int map[], int const WIDTH, int const HEIGHT)
+
+Dla każdego punktu z planszy potrzebującego bazy uruchamia funkcję szukającą tej bazy.
+
+\item void findbase(frame *lines, int map[], int index, int const WIDTH, int const HEIGHT)
+
+Szuka bazy dla punktu. Szuka wielokąta o jak najmniejszym polu, który będzie tworzył bazę dla tego punktu. Jeżeli punkt poziomo lub pionowo sąsiaduje z punktem także potrzebującym otoczenia, to fukcja dla takiego punktu też jest uruchamiana. 
+
+\item void push\textunderscore frame(frame *lines, int n1, int n2, int map[], int const WIDTH, int const HEIGHT)
+
+Dodaje do struktury Frame nowe odcinki wchodzące w skład bazy. Jeżeli te odcinki już są, to nie dodaje ich drugi raz. Pierwsze współrzędne odcinka na planszy są mniejsze niż drugie.
+
+\item int det(int x1, int y1, int x2, int y2, int x3, int y3)
+
+Liczy wyznacznik dwóch wektórów na płaszczyźnie.
+
+\item int sgn(int x)
+
+Funckja signum.
+
+\item void swap(int *a, int *b)
+
+Zamienia wartości dwóch zmiennych typu int.
+
+\end{enumerate}
+
+\section{Moduł communication}
+
+\begin{enumerate}
+
+\item Zmienne globalne
+
+\begin{enumerate}
+
+\item PipesPtr Channel
+
+Zawiera informacje o plikach kolejkowych i o wersji programu (A czy B).
+
+\end{enumerate}
+
+\item void fifo\textunderscore init(int argc, char *argv[])
+
+Przypisuje zmiennej globalnej Channel adres struktury pipes z informacjami o plikach kolejkowych i wersji programu (A czy B).
+
+\item void send\textunderscore info(int index)
+
+Otrzymuje zmienną int i wypisuje ją do tablicy charów text. Następnie adres tablicy jest przekazywany do funkcji wypisującej tablicę do pliku kolejkowego.
+
+\item void get\textunderscore info(int *ans)
+
+Sprawdza, czy program odczytał jakieś informacje z pliku kolejkowego. Gdy pierwsza cyfra jest liczbą, to wczytuje całą liczbę, gdy pierwsza cyfra nie jest liczbą, ale wczytany teskt jest dłuższy niż 1, to odczytuje liczbę od drugiego indeksu tablicy. Gdy nie otrzymano żadnej informacji ustawia wartośc przekazywanej zmiennej na -1.
+
+\item int string\textunderscore to\textunderscore int(char text[])
+
+Zamienia liczbę wpisaną do tablicy charów na zmienną typu int.
+
+\end{enumerate}
+
+\section{Moduł fifo}
+
+\begin{enumerate}
+
+\item Struktury
+
+\begin{enumerate}
+
+\item pipes
+
+Zawiera wskaźniki na struktury FILE dotyczące pliku, z którego czytamy i pliku, do którego wysyłamy informacje. Ponadto zawiera zmienną typu \textunderscore Bool, która mówi, czy program obsługuje gracza A.
+
+
+\end{enumerate}
+
+\item void closePipes(PipesPtr pipes)
+
+Zamyka plik, z którego czytamy i plik, do którego wysyłamy informacje.
+
+\item PipesPtr initPipes(int argc,char *argv[])
+
+Zwraca adres na strukturę pipes, czyli tworzy pliki kolejkowe i zaznacza wersję programu (A czy B). W przypadku niepowodzenia wyisuje błąd i zamyka program.
+
+\item static FILE *openOutPipe(char *name)
+
+Otwiera plik kolejkowy, z którego czytamy informacje
+
+\item static FILE *openInPipe(char *name)
+
+Otwiera plik kolejkowy, do którego wysyłamy informacje.
+
+\item void sendStringToPipe(PipesPtr pipes, const char *data)
+
+Wypisuje odpowiednią informację do pliku kolejkowego.
+
+\item \textunderscore Bool getStringFromPipe(PipesPtr pipes, char *buffer, size\textunderscore t size)
+
+Wczytuję jedną linię z pliku koljekowego do tablicy charów. Gdy nic nie wczytano zwraca 0, w przeciwnym wypadku 1.
+
+
+\end{enumerate}
+
+\section{Moduł coordinates}
+
+\begin{enumerate}
+
+\item Struktury
+
+\begin{enumerate}
+
+\item Vector
+
+Zawiera całkowite współrzędne na płaszczyźnie. Najpierw współrzędno osi OX a potem OY.
+
+\end{enumerate}
+
+\item vec dot\textunderscore clicked(double x, double y)
+
+Sprawdza, czy kliknięcie trafiło w jakąkolwiek kropkę. Zwraca współrzędne tej kropki lub punkt (-1, -1), gdy nic nie trafiono.
+
+\item \textunderscore Bool verify\textunderscore click(int map[], vec test, int const WIDTH, int const HEIGHT)
+
+Sprawdza, czy przeciwnik trafił w odpowiednią kropkę, tzn. czy może ją zaznaczyć.
+
+\end{enumerate}
+
+\section{Moduł definitoins}
+
+Ten moduł składa się tylko z pliku nagłówkowego, w którym są załączone wszystkie potrzebne biblioteki oraz polecenia \say{DEFINE}, które ustalają promień kropek (RADIOUS), przerwę między nimi (GAP) oraz maksymalną wielkość planszy (MAX\textunderscore WIDTH - szerokość, MAX\textunderscore HEIGHT - wysokośc).
+
+\end{document}

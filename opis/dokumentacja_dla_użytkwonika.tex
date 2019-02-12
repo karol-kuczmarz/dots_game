@@ -1,0 +1,47 @@
+\documentclass[a4paper]{article}
+% Kodowanie latain 2
+%\usepackage[latin2]{inputenc}
+\usepackage[T1]{fontenc}
+% Można też użyć UTF-8
+\usepackage[utf8]{inputenc}
+
+\usepackage{enumerate}
+% Język
+\usepackage[polish]{babel}
+% \usepackage[english]{babel}
+\usepackage{verbatim}
+% Rózne przydatne paczki:
+% - znaczki matematyczne
+\usepackage{amsmath, amsfonts}
+% - wcięcie na początku pierwszego akapitu
+\usepackage{indentfirst}
+% - komenda \url 
+\usepackage{hyperref}
+% - dołączanie obrazków
+\usepackage{graphics}
+% - szersza strona
+\usepackage[nofoot,hdivide={2cm,*,2cm},vdivide={2cm,*,2cm}]{geometry}
+\frenchspacing
+% - brak numerów stron
+\pagestyle{empty}
+
+\usepackage{dirtytalk}
+
+% dane autora
+\author{Karol Kuczmarz, 308845}
+\title{Kropki - dokumentacja dla użytkownika}
+\date{\today}
+
+% początek dokumentu
+\begin{document}
+\maketitle
+\section{Jak uruchomić grę?}
+Po skompilowaniu programu powstanie plik "kropki", który trzeba będzie uruchomić w dwóch kopiach - jedną z argumentem uruchomienia \say{A}, a drugą z argumentem \say{B} (każda kopia jest dla innego gracza). Użytkownicy będą mogli wybrać wielkośc planszy. Aby gra nie wyłączyła się, muszą wybrać taki sam rozmiar.
+\section{Zasady gry}
+Gra w kropki jest dość prostą grą. Użytkownicy wybierają kropki na zmianę. Własna kropka ma kolor pomaraczowy, zaś kropki przeciwnika będą zaznaczone na niebiesko. Można zaznaczać tylko czarną kropkę, czyli taką niezaznaczoną wcześniej przez nikogo i nieznajdującą się w żadnej bazie.
+
+Baza - nazywamy w ten sposób niepusty wielokąt składający się z sąsiadujących (horyzontalnie, wertykalnie bądź na ukos) ze sobą kropek tego samego koloru (pomarańczowego lub niebieskiego). Za otoczenie wrogiej kropki gracz dostaje 2~punkty, natomiast gracz, którego kropka została otoczona, traci 1~punkt. Otoczenie niczyjej kropki nic nie zmienia. Wewnątrz bazy nie można wstawiać dodatkowych kropek oraz wykorzystywać kropek z wnętrza bazy do budowania nowych baz.
+
+Wygrywa gracz, który uzyska większą liczbę punktów po wypełnieniu wszystkich kropek. Wyjście z gry lub rozpoczęcie nowej jest równoznaczne z poddaniem się.
+
+\end{document}
