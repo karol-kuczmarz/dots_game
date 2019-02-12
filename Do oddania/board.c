@@ -13,6 +13,7 @@ _Bool main_window_opened=0;
 GtkWidget *mypoints_info;
 GtkWidget *opppoints_info;
 GtkWidget *window;
+GtkWidget *whose_turn;
 
 gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
@@ -27,12 +28,13 @@ gboolean button_press_event(GtkWidget *widget, GdkEventButton *event, gpointer d
 		{
 			move(map, &my_frame, pom.x+pom.y*WIDTH, &opp_points, &my_points, WIDTH, HEIGHT);
 			send_info(pom.x+pom.y*WIDTH);
-    		gtk_widget_queue_draw(widget);
+    		gtk_widget_queue_draw(GTK_WIDGET(window));
     		if(the_end()==1)
     		{
                 end_game_window();
     		}
     		my_turn=0;
+    		update_whose_turn();
 		}
 	}
 	return 1;
@@ -115,14 +117,11 @@ void new_game(_Bool isA)
 	opp_frame.num=0;
 	my_points=0;
 	opp_points=0;
+	small_window_opened=0;
 }
 
 int opponents_move(gpointer data)
 {
-    if(my_turn==1)
-    {
-        return 1;
-    }
     int opp;
     get_info(&opp);
     if(opp>=0)
@@ -148,13 +147,36 @@ int opponents_move(gpointer data)
             end_game_window();
         }
         my_turn=1;
+        update_whose_turn();
+    }
+    else
+    {
+        if(opp<-1)
+        {
+            switch (opp)
+            {
+                case (-1)*'S':
+                    check_version('S');
+                    break;
+                case (-1)*'M':
+                    check_version('M');
+                    break;
+                case (-1)*'B':
+                    check_version('B');
+                    break;
+                case (-3):
+                    opponent_left();
+                default:
+                    break;
+            }
+        }
     }
     return 1;
 }
 
 void points_update(void)
 {
-    char text[30];
+    char text[50];
     sprintf(text, "My score: %d", my_points);
     gtk_label_set_text(GTK_LABEL(mypoints_info), text);
     sprintf(text, "Opponent's score: %d", opp_points);
@@ -180,9 +202,10 @@ void new_game_window(GtkWidget *widget, gpointer data)
     gtk_container_add(GTK_CONTAINER(small_window), ver_box);
     gtk_window_set_title(GTK_WINDOW(small_window), "Are you sure?");
     gtk_window_set_position(GTK_WINDOW(small_window),GTK_WIN_POS_CENTER);
-
+    g_signal_connect(G_OBJECT(yes_button), "clicked", G_CALLBACK(inform_opp), NULL);
     g_signal_connect(G_OBJECT(yes_button), "clicked", G_CALLBACK(close_main_window), small_window);
 	g_signal_connect(G_OBJECT(no_button), "clicked", G_CALLBACK(close_small_window), small_window);
+	g_signal_connect(G_OBJECT(small_window), "destroy", G_CALLBACK(close_small_window), small_window);
     gtk_widget_show_all(small_window);
 }
 
@@ -225,13 +248,14 @@ void main_window(int size)
             version='B';
         }
     }
-    GtkWidget *drawing_area;
 	GtkWidget *layout;
 	GtkWidget *newgame_button;
 	GtkWidget *close_button;
 	GtkWidget *buttons;
 	GtkWidget *vert_line;
 	GtkWidget *hor_line;
+    GtkWidget *drawing_area;
+
 	new_game(size<4);
 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -244,7 +268,14 @@ void main_window(int size)
 	close_button=gtk_button_new_with_label("Close game");
 	mypoints_info=gtk_label_new("My score: 0");
 	opppoints_info=gtk_label_new("Opponent's score: 0");
-
+	if(my_turn==1)
+	{
+        whose_turn=gtk_label_new("Your turn");
+    }
+    else
+    {
+        whose_turn=gtk_label_new("Not your turn");
+    }
 	gtk_widget_set_size_request (drawing_area, GAP*(WIDTH-1), GAP*(HEIGHT-1));
 	gtk_grid_attach(GTK_GRID(layout), drawing_area, 0, 0, WIDTH, HEIGHT);
 	gtk_box_pack_start(GTK_BOX(buttons), newgame_button, TRUE, TRUE, 0);
@@ -254,6 +285,7 @@ void main_window(int size)
 	gtk_box_pack_start(GTK_BOX(buttons), opppoints_info, FALSE, TRUE, 0);
 	gtk_grid_attach(GTK_GRID(layout), vert_line, WIDTH, 0, 1, HEIGHT);
 	gtk_grid_attach(GTK_GRID(layout), buttons, WIDTH+1, 0, 1, HEIGHT);
+	gtk_grid_attach(GTK_GRID(layout), whose_turn, 0, HEIGHT+1, WIDTH, 1);
 
   	gtk_container_add(GTK_CONTAINER(window), layout);
 
@@ -263,6 +295,8 @@ void main_window(int size)
 	g_signal_connect (window, "button-press-event", G_CALLBACK (button_press_event), NULL);
 
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	gtk_widget_set_margin_bottom(layout, 5);
+	gtk_widget_set_margin_end(layout, 5);
  	if(size<4)
  	{
         gtk_window_set_title(GTK_WINDOW(window), "Dots (player A)");
@@ -274,6 +308,7 @@ void main_window(int size)
  	g_timeout_add(100, opponents_move, window);
 
  	gtk_widget_show_all(window);
+
 }
 
 void close_main_window_alert()
@@ -295,9 +330,11 @@ void close_main_window_alert()
     gtk_container_add(GTK_CONTAINER(small_window), ver_box);
     gtk_window_set_title(GTK_WINDOW(small_window), "Are you sure?");
     gtk_window_set_position(GTK_WINDOW(small_window),GTK_WIN_POS_CENTER);
-
+    g_signal_connect(G_OBJECT(yes_button), "clicked", G_CALLBACK(inform_opp), NULL);
     g_signal_connect(G_OBJECT(yes_button), "clicked", G_CALLBACK(gtk_main_quit), small_window);
+
 	g_signal_connect(G_OBJECT(no_button), "clicked", G_CALLBACK(close_small_window), small_window);
+	g_signal_connect(G_OBJECT(small_window), "destroy", G_CALLBACK(close_small_window), small_window);
     gtk_widget_show_all(small_window);
 }
 
@@ -305,7 +342,7 @@ void check_version(int sign)
 {
     if(sign!=version)
     {
-        printf("Wrong versions of games. Error\n");
+        printf( " \n\n          Wrong versions of games. Error\n\n");
         exit(1);
     }
 }
@@ -329,14 +366,19 @@ void end_game_window(void)
 {
     small_window_opened=1;
     GtkWidget *small_window;
+    char help[50];
+    sprintf(help, "Your points: %d", my_points);
+    GtkWidget *points1=gtk_label_new(help);
+    sprintf(help, "Opponent's points: %d", opp_points);
+    GtkWidget *points2=gtk_label_new(help);
     GtkWidget *Ok=gtk_button_new_with_label("Ok");
-    GtkWidget *ver_box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 0), *hor_box=gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	gtk_box_pack_start(GTK_BOX(ver_box), hor_box, TRUE, TRUE, 3);
+    GtkWidget *ver_box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
+	gtk_box_pack_start(GTK_BOX(ver_box), points1, TRUE, TRUE, 3);
+	gtk_box_pack_start(GTK_BOX(ver_box), points2, TRUE, TRUE, 3);
 	gtk_box_pack_start(GTK_BOX(ver_box), Ok, TRUE, TRUE, 3);
-	gtk_box_pack_start(GTK_BOX(hor_box), opppoints_info, TRUE, TRUE, 5);
-	gtk_box_pack_start(GTK_BOX(hor_box), mypoints_info, TRUE, TRUE, 5);
     small_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_default_size(GTK_WINDOW(small_window), 200, 200);
+    gtk_window_set_default_size(GTK_WINDOW(small_window), 200, 100);
+    gtk_container_set_border_width(GTK_CONTAINER(small_window), 5);
     gtk_container_add(GTK_CONTAINER(small_window), ver_box);
     if(opp_points>my_points)
     {
@@ -357,5 +399,49 @@ void end_game_window(void)
     gtk_window_set_position(GTK_WINDOW(small_window),GTK_WIN_POS_CENTER);
 
     g_signal_connect(G_OBJECT(Ok), "clicked", G_CALLBACK(close_main_window), small_window);
+    g_signal_connect(G_OBJECT(small_window), "destroy", G_CALLBACK(close_main_window), small_window);
+    gtk_widget_show_all(small_window);
+}
+
+void update_whose_turn()
+{
+    if(my_turn==1)
+    {
+        gtk_label_set_text(GTK_LABEL(whose_turn), "Your turn");
+    }
+    else
+    {
+        gtk_label_set_text(GTK_LABEL(whose_turn), "Not your turn");
+    }
+}
+
+void inform_opp(GtkWidget *widget, gpointer data)
+{
+    send_info(-3);
+}
+
+void opponent_left(void)
+{
+    small_window_opened=1;
+    GtkWidget *small_window;
+    GtkWidget *info=gtk_label_new("Your opponent has left the game. You won!");
+    char help[50];
+    sprintf(help, "Your points: %d", my_points);
+    GtkWidget *points1=gtk_label_new(help);
+    sprintf(help, "Opponent's points: %d", opp_points);
+    GtkWidget *points2=gtk_label_new(help);
+    GtkWidget *ver_box=gtk_box_new(GTK_ORIENTATION_VERTICAL, 3);
+    gtk_box_pack_start(GTK_BOX(ver_box), info, TRUE, TRUE, 3);
+	gtk_box_pack_start(GTK_BOX(ver_box), points1, TRUE, TRUE, 3);
+	gtk_box_pack_start(GTK_BOX(ver_box), points2, TRUE, TRUE, 3);
+    small_window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_default_size(GTK_WINDOW(small_window), 200, 100);
+    gtk_container_set_border_width(GTK_CONTAINER(small_window), 5);
+    gtk_container_add(GTK_CONTAINER(small_window), ver_box);
+    gtk_window_set_title(GTK_WINDOW(small_window), "You won!");
+
+    gtk_window_set_position(GTK_WINDOW(small_window),GTK_WIN_POS_CENTER);
+
+    g_signal_connect(G_OBJECT(small_window), "destroy", G_CALLBACK(close_main_window), small_window);
     gtk_widget_show_all(small_window);
 }

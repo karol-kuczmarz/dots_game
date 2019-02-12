@@ -60,16 +60,19 @@ void i_main_window(GtkWidget *widget)
     {
         if(widget==small_board)
         {
+            send_info((-1)*'S');
             main_window(1);
         }
         else
         {
             if(widget==medium_board)
             {
+                send_info((-1)*'M');
                 main_window(2);
             }
             else
             {
+                send_info((-1)*'B');
                 main_window(3);
             }
         }
@@ -78,16 +81,19 @@ void i_main_window(GtkWidget *widget)
     {
         if(widget==small_board)
         {
+            send_info((-1)*'S');
             main_window(4);
         }
         else
         {
             if(widget==medium_board)
             {
+                send_info((-1)*'M');
                 main_window(5);
             }
             else
             {
+                send_info((-1)*'B');
                 main_window(6);
             }
         }

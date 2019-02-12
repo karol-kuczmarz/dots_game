@@ -26,7 +26,7 @@ void get_info(int *ans)
         }
         else
         {
-            if(isdigit(text[1]))
+            if(strlen(text)>1 && isdigit(text[1]))
             {
             *ans=-string_to_int(text+1);
             return;

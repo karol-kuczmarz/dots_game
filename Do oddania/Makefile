@@ -13,20 +13,23 @@ $(NAME): main.c board.o coordinates.o move.o base.o communication.o fifo.o $(DEP
 	$(CC) $(CFLAGS) main.c board.o coordinates.o move.o base.o communication.o fifo.o -o $(NAME) $(LDFLAGS)
 
 board.o: board.c coordinates.o move.o base.o communication.o fifo.o $(DEPS)
-	$(CC) -c $(CFLAGS) board.c coordinates.o move.o base.o communication.o fifo.o -o board.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) board.c -o board.o
 
 coordinates.o: coordinates.c $(DEPS)
-	$(CC) -c $(CFLAGS) coordinates.c -o coordinates.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) coordinates.c -o coordinates.o
 
 move.o: move.c base.o $(DEPS)
-	$(CC) -c $(CFLAGS) move.c base.o -o move.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) move.c -o move.o
 
 base.o: base.c $(DEPS)
-	$(CC) -c $(CFLAGS) base.c -o base.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) base.c -o base.o
 
 communication.o: communication.c fifo.o $(DEPS)
-	$(CC) -c $(CFLAGS) communication.c fifo.o -o communication.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) communication.c -o communication.o
 
 fifo.o: fifo.c $(DEPS)
-	$(CC) -c $(CFLAGS) fifo.c -o fifo.o $(LDFLAGS)
+	$(CC) -c $(CFLAGS) fifo.c -o fifo.o
+
+clean:
+	rm *.o kropki
 

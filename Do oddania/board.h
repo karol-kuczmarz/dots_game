@@ -27,3 +27,6 @@ void close_main_window_alert();
 void check_version(int sign);
 void end_game_window(void);
 _Bool the_end(void);
+void update_whose_turn();
+void inform_opp(GtkWidget *widget, gpointer data);
+void opponent_left(void);
